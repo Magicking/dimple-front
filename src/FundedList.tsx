@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table,
+import {
+	Table,
 	TableBody,
 	TableCell,
 	TableHead,
@@ -28,6 +29,7 @@ class Transaction {
 	Address: string;
 	TransactionHash: string;
 	Amount: number;
+	TotalFee: number;
 	Status: TxStatus;
 
 	constructor(addr: string, txhash: string, amount: number, status: TxStatus) {
@@ -35,12 +37,13 @@ class Transaction {
 		this.TransactionHash = txhash;
 		this.Amount = amount;
 		this.Status = status;
+		this.TotalFee = 0;
 	}
 }
 
 export class FundedList extends React.Component<Props, TxState> {
 	state: TxState = {
-		Txs: [ 
+		Txs: [
 			new Transaction("0x61201ee3bc5b988d7c616870fa0381200aa9a11c", "0x2e1f2a077af7f45f0398f3032e8cbf28dc658157faeb7dda06a62053c8a47495", 10000, TxStatus.InFlight),
 			new Transaction("0x61201ee3bc5b988d7c616870fa0381200aa9a11c", "0x1e1f2a077af7f45f0398f3032e8cbf28dc658157faeb7dda06a62053c8a47495", 10000, TxStatus.Included),
 			new Transaction("0x61201ee3bc5b988d7c616870fa0381200aa9a11c", "0x3e1f2a077af7f45f0398f3032e8cbf28dc658157faeb7dda06a62053c8a47495", 10000, TxStatus.Errored),
@@ -62,23 +65,25 @@ export class FundedList extends React.Component<Props, TxState> {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-				{Txs.map(row => (
-					<TableRow key={row.TransactionHash}>
-						<TableCell component="th" scope="row"><Blockie opts={{seed: row.Address, scale: 2}}/></TableCell>
-						<TableCell align="right">{row.Address}</TableCell>
-						<TableCell align="right">{row.TransactionHash}</TableCell>
-						<TableCell align="right">{row.Amount}</TableCell>
-						<TableCell align="center">{(() => {switch(row.Status) {
-							case TxStatus.InFlight:
-								return (<CircularProgress />);
-							case TxStatus.Included:
-								return (<Check />);
-							case TxStatus.Errored:
-								return (<Error />);
-						}})()}
-						</TableCell>
-					</TableRow>
-				))}
+					{Txs.map(row => (
+						<TableRow key={row.TransactionHash}>
+							<TableCell component="th" scope="row"><Blockie opts={{ seed: row.Address, scale: 2 }} /></TableCell>
+							<TableCell align="right"><a href={AddrInfoLink}>{row.Address}</a></TableCell>
+							<TableCell align="right">{row.TransactionHash}</TableCell>
+							<TableCell align="right">{row.Amount}</TableCell>
+							<TableCell align="center">{(() => {
+								switch (row.Status) {
+									case TxStatus.InFlight:
+										return (<CircularProgress />);
+									case TxStatus.Included:
+										return (<Check />);
+									case TxStatus.Errored:
+										return (<Error />);
+								}
+							})()}
+							</TableCell>
+						</TableRow>
+					))}
 				</TableBody>
 			</Table>
 		);
